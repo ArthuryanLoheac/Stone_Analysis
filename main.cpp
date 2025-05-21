@@ -7,13 +7,33 @@
 
 #include <iostream>
 #include <cstring>
+#include <cstdlib>
+#include <vector>
+#include <fstream>
+#include <cmath>
+#include <algorithm>
+#include <complex>
+#include <unordered_map>
+#include "fft.hpp"
+
+constexpr int SAMPLE_RATE = 48000;
+
+std::vector<float> analyze(const char *filename, int topN)
+{
+    FFT fftAnalyzer(filename);
+
+    auto frequencies = fftAnalyzer.getTopFrequencies(topN);
+    return frequencies;
+}
 
 int main(int ac, char **av)
 {
     if (ac == 4 && std::strcmp(av[1], "--analyze") == 0) {
-        std::cout << "Analyze." << std::endl;
-        // Call the analyze function with the provided arguments
-        // analyze(av[2], std::atoi(av[3]));
+        auto result = analyze(av[2], std::atoi(av[3]));
+        std::cout << "Top " << std::atoi(av[3]) << " frequencies: " << std::endl;
+        for (const auto &freq : result) {
+            std::cout << freq << std::endl;
+        }
     } else if (ac == 5 && std::strcmp(av[1], "--cypher") == 0) {
         std::cout << "Cypher." << std::endl;
         // Call the cypher function with the provided arguments
