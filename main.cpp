@@ -26,7 +26,7 @@ std::vector<float> analyze(const char *filename, int topN)
     return frequencies;
 }
 
-int main(int ac, char **av)
+void parseArgs(int ac, char **av)
 {
     if (ac == 4 && std::strcmp(av[1], "--analyze") == 0) {
         auto result = analyze(av[2], std::atoi(av[3]));
@@ -49,5 +49,15 @@ int main(int ac, char **av)
         "MESSAGE The message to hide in the audio file\n" <<
         "N Number of top frequencies to display\n";
     }
-    return 0;
+}
+
+int main(int ac, char **av)
+{
+    try {
+        parseArgs(ac, av);
+        return 0;
+    } catch (std::exception &e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return 84;
+    }
 }
