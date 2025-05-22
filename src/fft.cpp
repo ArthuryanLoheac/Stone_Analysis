@@ -23,7 +23,8 @@ std::vector<std::complex<float>> FFT::readWavSamples(const std::string& path) {
     file.seekg(WAV_HEADER_SIZE);
     size_t sample_count = (filesize - WAV_HEADER_SIZE) / sizeof(int16_t);
     std::vector<int16_t> raw_samples(sample_count);
-    file.read(reinterpret_cast<char*>(raw_samples.data()), sample_count * sizeof(int16_t));
+    file.read(reinterpret_cast<char*>(raw_samples.data()), sample_count *
+        sizeof(int16_t));
 
     std::vector<std::complex<float>> samples;
     for (int16_t sample : raw_samples)
@@ -50,7 +51,9 @@ void FFT::fft(std::vector<std::complex<float>>& a) {
     fft(even);
     fft(odd);
     for (size_t k = 0; k < n / 2; k++) {
-        auto t = static_cast<std::complex<float>>(std::polar(1.0, -2.0 * M_PI * k / n) * static_cast<std::complex<double>>(odd[k]));
+        auto t = static_cast<std::complex<float>>(
+            std::polar(1.0, -2.0 * M_PI * k / n) *
+            static_cast<std::complex<double>>(odd[k]));
         a[k] = even[k] + t;
         a[k + n / 2] = even[k] - t;
     }
@@ -82,4 +85,28 @@ std::vector<float> FFT::getTopFrequencies(int n) {
 
 std::vector<std::complex<float>> FFT::getSamples() {
     return _samples;
+}
+
+std::vector<std::complex<float>> FFT::idft(const
+    std::vector<std::complex<float>> &freqDomain) {
+    size_t n = freqDomain.size();
+    std::vector<std::complex<float>> timeDomain(n);
+    for (size_t t = 0; t < n; t++) {
+        std::complex<float> sum(0.0f, 0.0f);
+        for (size_t k = 0; k < n; k++) {
+            float angle = 2.0f * M_PI * t * k / n;
+            sum += freqDomain[k] * std::polar(1.0f, angle);
+        }
+        timeDomain[t] = sum / static_cast<float>(n);
+    }
+    return timeDomain;
+}
+
+std::vector<int16_t> FFT::recomposeSignal(const
+    std::vector<std::complex<float>> &timeDomain) {
+    std::vector<int16_t> signal;
+    for (const auto& sample : timeDomain) {
+        signal.push_back(static_cast<int16_t>(std::round(sample.real())));
+    }
+    return signal;
 }

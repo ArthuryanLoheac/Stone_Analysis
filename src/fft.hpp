@@ -15,6 +15,10 @@ public:
 
     std::vector<std::complex<float>> getSamples();
     std::vector<float> getTopFrequencies(int n);
+    std::vector<std::complex<float>> idft(const
+        std::vector<std::complex<float>> &freqDomain);
+    std::vector<int16_t> recomposeSignal(const
+        std::vector<std::complex<float>> &timeDomain);
 private:
     std::vector<std::complex<float>> readWavSamples(const std::string& path);
     size_t nextPowerOf2(size_t n);
