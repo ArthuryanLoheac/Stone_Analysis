@@ -32,7 +32,7 @@ void parseArgs(int ac, char **av)
         auto result = analyze(av[2], std::atoi(av[3]));
         std::cout << "Top " << std::atoi(av[3]) << " frequencies: " << std::endl;
         for (const auto &freq : result) {
-            std::cout << freq << std::endl;
+            printf("%.1f Hz\n", freq);
         }
     } else if (ac == 5 && std::strcmp(av[1], "--cypher") == 0) {
         std::cout << "Cypher." << std::endl;

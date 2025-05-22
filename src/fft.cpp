@@ -6,6 +6,7 @@
 #include <algorithm>
 #include "fft.hpp"
 #include <bits/stl_numeric.h>
+#include <unordered_set>
 
 constexpr int SAMPLE_RATE = 48000;
 constexpr int WAV_HEADER_SIZE = 44;
@@ -80,6 +81,9 @@ std::vector<float> FFT::getTopFrequencies(int n) {
         float freq = static_cast<float>(indices[i]) * SAMPLE_RATE / nb;
         top_frequencies.push_back(freq);
     }
+
+    // Sort the frequencies in descending order for display
+    std::sort(top_frequencies.begin(), top_frequencies.end(), std::greater<float>());
     return top_frequencies;
 }
 
