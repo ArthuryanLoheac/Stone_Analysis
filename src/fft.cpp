@@ -53,6 +53,7 @@ void FFT::fft(std::vector<std::complex<float>>& a) {
     fft(odd);
     for (size_t k = 0; k < n / 2; k++) {
         auto t = static_cast<std::complex<float>>(
+
             std::polar(1.0, -2.0 * M_PI * k / n) *
             static_cast<std::complex<double>>(odd[k]));
         a[k] = even[k] + t;
