@@ -27,40 +27,49 @@ std::vector<float> analyze(const char *filename, int topN)
     return frequencies;
 }
 
-void cypher(const char *inputFile, const char *outputFile, const char *message) {
-    // Ouvrir le fichier d'entrée
-    std::ifstream inFile(inputFile, std::ios::binary);
-    if (!inFile) {
-        throw std::runtime_error("Le fichier d'entrée est introuvable.");
+std::string cryptMessage(const char *message)
+{
+    std::string cryptedMessage;
+    for (size_t i = 0; i < strlen(message); i++) {
+        cryptedMessage += message[i] ^ 0xFF; // XOR with 0xFF
     }
+    return cryptedMessage;
+}
 
-    // Lire l'en-tête WAV
+std::string decryptMessage(const std::string &message)
+{
+    std::string decryptedMessage;
+    for (size_t i = 0; i < message.size(); i++) {
+        decryptedMessage += message[i] ^ 0xFF; // XOR with 0xFF
+    }
+    return decryptedMessage;
+}
+
+void cypher(const char *inputFile, const char *outputFile, const char *message) {
+    std::string messageCrypted = cryptMessage(message);
+    std::ifstream inFile(inputFile, std::ios::binary);
+    if (!inFile)
+        throw std::runtime_error("Le fichier d'entrée est introuvable.");
+
     char header[WAV_HEADER_SIZE];
     inFile.read(header, WAV_HEADER_SIZE);
-    if (inFile.gcount() != WAV_HEADER_SIZE) {
+    if (inFile.gcount() != WAV_HEADER_SIZE)
         throw std::runtime_error("Le fichier d'entrée n'est pas un fichier WAV valide.");
-    }
 
-    // Lire les données audio
     std::vector<char> audioData((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
     inFile.close();
 
-    // Ajouter le message et le caractère final
-    size_t messageLength = std::strlen(message);
-    for (size_t i = 50; i < 50 + messageLength + 1; i++) { // +1 pour inclure le caractère final
+    size_t messageLength = messageCrypted.size();
+    for (size_t i = 50; i < 50 + messageLength + 1; i++) {
         if (i >= audioData.size()) {
             throw std::runtime_error("Le message est trop long pour être caché dans le fichier audio.");
         }
-        audioData[i] = (i - 50 < messageLength) ? message[i - 50] : '\0'; // Ajouter le message ou le caractère final
+        audioData[i] = (i - 50 < messageLength) ? messageCrypted[i - 50] : '\0';
     }
-
-    // Ouvrir le fichier de sortie
     std::ofstream outFile(outputFile, std::ios::binary);
-    if (!outFile) {
+    if (!outFile)
         throw std::runtime_error("Impossible de créer le fichier de sortie.");
-    }
 
-    // Écrire l'en-tête et les données audio dans le fichier de sortie
     outFile.write(header, WAV_HEADER_SIZE);
     outFile.write(audioData.data(), audioData.size());
     outFile.close();
@@ -73,18 +82,15 @@ void decypher(const char *inputFile) {
         throw std::runtime_error("Le fichier d'entrée est introuvable.");
     }
 
-    // Lire l'en-tête WAV
     char header[WAV_HEADER_SIZE];
     inFile.read(header, WAV_HEADER_SIZE);
     if (inFile.gcount() != WAV_HEADER_SIZE) {
         throw std::runtime_error("Le fichier d'entrée n'est pas un fichier WAV valide.");
     }
 
-    // Lire les données audio
     std::vector<char> audioData((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
     inFile.close();
 
-    // Extraire le message caché
     std::string hiddenMessage;
     for (size_t i = 50; i < audioData.size(); i++) {
         if (audioData[i] == '\0') {
@@ -92,9 +98,7 @@ void decypher(const char *inputFile) {
         }
         hiddenMessage += audioData[i];
     }
-
-    // Afficher le message caché
-    std::cout << hiddenMessage << std::endl;
+    std::cout << decryptMessage(hiddenMessage) << std::endl;
 }
 
 void parseArgs(int ac, char **av)
