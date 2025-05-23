@@ -53,6 +53,7 @@ void FFT::fft(std::vector<std::complex<float>>& a) {
     fft(odd);
     for (size_t k = 0; k < n / 2; k++) {
         auto t = static_cast<std::complex<float>>(
+
             std::polar(1.0, -2.0 * M_PI * k / n) *
             static_cast<std::complex<double>>(odd[k]));
         a[k] = even[k] + t;
@@ -81,10 +82,17 @@ std::vector<float> FFT::getTopFrequencies(int n) {
         float freq = static_cast<float>(indices[i]) * SAMPLE_RATE / nb;
         top_frequencies.push_back(freq);
     }
-
-    // Sort the frequencies in descending order for display
     std::sort(top_frequencies.begin(), top_frequencies.end(), std::greater<float>());
     return top_frequencies;
+}
+
+std::vector<float> FFT::getAllFrequencies() {
+    size_t nb = _samples.size();
+    std::vector<float> frequencies(nb / 2);
+    for (size_t i = 0; i < nb / 2; i++) {
+        frequencies[i] = static_cast<float>(i) * SAMPLE_RATE / nb;
+    }
+    return frequencies;
 }
 
 std::vector<std::complex<float>> FFT::getSamples() {

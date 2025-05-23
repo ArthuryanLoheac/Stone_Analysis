@@ -7,6 +7,10 @@
 
 #ifndef FFT_HPP_
 #define FFT_HPP_
+#include <vector>
+#include <cstdint>
+#include <complex>
+
 
 class FFT {
 public:
@@ -19,6 +23,7 @@ public:
         std::vector<std::complex<float>> &freqDomain);
     std::vector<int16_t> recomposeSignal(const
         std::vector<std::complex<float>> &timeDomain);
+    std::vector<float> getAllFrequencies();
 private:
     std::vector<std::complex<float>> readWavSamples(const std::string& path);
     size_t nextPowerOf2(size_t n);

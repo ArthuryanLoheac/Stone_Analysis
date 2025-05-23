@@ -55,7 +55,9 @@ SRC_MAIN	=	main.cpp \
 
 SRC	= 	$(shell find src -type f -name "*.cpp" ! -name "main.cpp") \
 
-SRC_TESTS	= 	tests/test_1.cpp \
+SRC_TESTS	= 	tests/test_main.cpp \
+				tests/test_cypher.cpp \
+				tests/test_fft.cpp \
 
 # ============= RULES ============= #
 

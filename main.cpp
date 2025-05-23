@@ -1,22 +1,6 @@
-/*
-** EPITECH PROJECT, 2025
-** Test
-** File description:
-** main
-*/
-
-#include <iostream>
-#include <cstring>
-#include <cstdlib>
-#include <vector>
-#include <fstream>
-#include <cmath>
-#include <algorithm>
-#include <complex>
-#include <unordered_map>
 #include "fft.hpp"
-
-constexpr int SAMPLE_RATE = 48000;
+#include "const.hpp"
+#include "cypher.hpp"
 
 std::vector<float> analyze(const char *filename, int topN)
 {
@@ -35,13 +19,9 @@ void parseArgs(int ac, char **av)
             printf("%.1f Hz\n", freq);
         }
     } else if (ac == 5 && std::strcmp(av[1], "--cypher") == 0) {
-        std::cout << "Cypher." << std::endl;
-        // Call the cypher function with the provided arguments
-        // cypher(av[2], av[3], av[4]);
+        cypher(av[2], av[3], av[4]);
     } else if (ac == 3 && std::strcmp(av[1], "--decypher") == 0) {
-        std::cout << "Decypher." << std::endl;
-        // Call the decypher function with the provided argument
-        // decypher(av[2]);
+        decypher(av[2]);
     } else {
         std::cout << "USAGE\n./stone_analysis [--analyze IN_FILE N | --cypher IN_FILE OUT_FILE MESSAGE | --decypher IN_FILE]\n" <<
         "IN_FILE An audio file to be analyzed\n" <<
