@@ -27,7 +27,7 @@ std::vector<float> analyze(const char *filename, int topN)
     return frequencies;
 }
 
-void cypher(const char *inputFile, const char *outputFile) {
+void cypher(const char *inputFile, const char *outputFile, const char *message) {
     // Ouvrir le fichier d'entrée
     std::ifstream inFile(inputFile, std::ios::binary);
     if (!inFile) {
@@ -45,12 +45,11 @@ void cypher(const char *inputFile, const char *outputFile) {
     std::vector<char> audioData((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
     inFile.close();
 
-    // Analyser toutes les fréquences
-    FFT fftAnalyzer(inputFile);
-    auto frequencies = fftAnalyzer.getAllFrequencies(); // Récupérer toutes les fréquences
-    std::cout << "Toutes les fréquences détectées dans le fichier d'entrée :" << std::endl;
-    for (const auto &freq : frequencies) {
-        std::cout << freq << " Hz" << std::endl;
+    for (size_t i = 50; i < 50 + strlen(message); i++) {
+        if (i >= audioData.size()) {
+            throw std::runtime_error("Le message est trop long pour être caché dans le fichier audio.");
+        }
+        audioData[i] = message[i - 50];
     }
 
     // Ouvrir le fichier de sortie
@@ -63,8 +62,6 @@ void cypher(const char *inputFile, const char *outputFile) {
     outFile.write(header, WAV_HEADER_SIZE);
     outFile.write(audioData.data(), audioData.size());
     outFile.close();
-
-    std::cout << "Fichier WAV copié avec succès de " << inputFile << " vers " << outputFile << "." << std::endl;
 }
 
 void parseArgs(int ac, char **av)
@@ -76,7 +73,7 @@ void parseArgs(int ac, char **av)
             printf("%.1f Hz\n", freq);
         }
     } else if (ac == 5 && std::strcmp(av[1], "--cypher") == 0) {
-        cypher(av[2], av[3]); // Appel de la fonction cypher
+        cypher(av[2], av[3], av[4]); // Appel de la fonction cypher
     } else if (ac == 3 && std::strcmp(av[1], "--decypher") == 0) {
         std::cout << "Decypher." << std::endl;
         // Call the decypher function with the provided argument
