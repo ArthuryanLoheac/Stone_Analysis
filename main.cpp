@@ -45,11 +45,13 @@ void cypher(const char *inputFile, const char *outputFile, const char *message) 
     std::vector<char> audioData((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
     inFile.close();
 
-    for (size_t i = 50; i < 50 + strlen(message); i++) {
+    // Ajouter le message et le caractère final
+    size_t messageLength = std::strlen(message);
+    for (size_t i = 50; i < 50 + messageLength + 1; i++) { // +1 pour inclure le caractère final
         if (i >= audioData.size()) {
             throw std::runtime_error("Le message est trop long pour être caché dans le fichier audio.");
         }
-        audioData[i] = message[i - 50];
+        audioData[i] = (i - 50 < messageLength) ? message[i - 50] : '\0'; // Ajouter le message ou le caractère final
     }
 
     // Ouvrir le fichier de sortie
@@ -64,6 +66,37 @@ void cypher(const char *inputFile, const char *outputFile, const char *message) 
     outFile.close();
 }
 
+void decypher(const char *inputFile) {
+    // Ouvrir le fichier d'entrée
+    std::ifstream inFile(inputFile, std::ios::binary);
+    if (!inFile) {
+        throw std::runtime_error("Le fichier d'entrée est introuvable.");
+    }
+
+    // Lire l'en-tête WAV
+    char header[WAV_HEADER_SIZE];
+    inFile.read(header, WAV_HEADER_SIZE);
+    if (inFile.gcount() != WAV_HEADER_SIZE) {
+        throw std::runtime_error("Le fichier d'entrée n'est pas un fichier WAV valide.");
+    }
+
+    // Lire les données audio
+    std::vector<char> audioData((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
+    inFile.close();
+
+    // Extraire le message caché
+    std::string hiddenMessage;
+    for (size_t i = 50; i < audioData.size(); i++) {
+        if (audioData[i] == '\0') {
+            break; // Fin du message
+        }
+        hiddenMessage += audioData[i];
+    }
+
+    // Afficher le message caché
+    std::cout << hiddenMessage << std::endl;
+}
+
 void parseArgs(int ac, char **av)
 {
     if (ac == 4 && std::strcmp(av[1], "--analyze") == 0) {
@@ -75,9 +108,7 @@ void parseArgs(int ac, char **av)
     } else if (ac == 5 && std::strcmp(av[1], "--cypher") == 0) {
         cypher(av[2], av[3], av[4]); // Appel de la fonction cypher
     } else if (ac == 3 && std::strcmp(av[1], "--decypher") == 0) {
-        std::cout << "Decypher." << std::endl;
-        // Call the decypher function with the provided argument
-        // decypher(av[2]);
+        decypher(av[2]); // Appel de la fonction decypher
     } else {
         std::cout << "USAGE\n./stone_analysis [--analyze IN_FILE N | --cypher IN_FILE OUT_FILE MESSAGE | --decypher IN_FILE]\n" <<
         "IN_FILE An audio file to be analyzed\n" <<
