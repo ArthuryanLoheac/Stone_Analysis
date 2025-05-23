@@ -7,6 +7,10 @@
 
 #ifndef FFT_HPP_
 #define FFT_HPP_
+#include <vector>
+#include <cstdint>
+#include <complex>
+
 
 class FFT {
 public:
