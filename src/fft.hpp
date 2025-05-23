@@ -19,6 +19,7 @@ public:
         std::vector<std::complex<float>> &freqDomain);
     std::vector<int16_t> recomposeSignal(const
         std::vector<std::complex<float>> &timeDomain);
+    std::vector<float> getAllFrequencies();
 private:
     std::vector<std::complex<float>> readWavSamples(const std::string& path);
     size_t nextPowerOf2(size_t n);

@@ -87,6 +87,15 @@ std::vector<float> FFT::getTopFrequencies(int n) {
     return top_frequencies;
 }
 
+std::vector<float> FFT::getAllFrequencies() {
+    size_t nb = _samples.size();
+    std::vector<float> frequencies(nb / 2);
+    for (size_t i = 0; i < nb / 2; i++) {
+        frequencies[i] = static_cast<float>(i) * SAMPLE_RATE / nb;
+    }
+    return frequencies;
+}
+
 std::vector<std::complex<float>> FFT::getSamples() {
     return _samples;
 }
