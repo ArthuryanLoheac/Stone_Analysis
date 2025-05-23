@@ -18,6 +18,8 @@
 
 constexpr int SAMPLE_RATE = 48000;
 constexpr int WAV_HEADER_SIZE = 44;
+constexpr char SEPARATOR = ' '; // Caractère de séparation
+constexpr char XOR_KEY = 0xFF; // Clé de chiffrement XOR
 
 std::vector<float> analyze(const char *filename, int topN)
 {
@@ -30,8 +32,14 @@ std::vector<float> analyze(const char *filename, int topN)
 std::string cryptMessage(const char *message)
 {
     std::string cryptedMessage;
+    size_t count = 0;
     for (size_t i = 0; i < strlen(message); i++) {
-        cryptedMessage += message[i] ^ 0xFF; // XOR with 0xFF
+        cryptedMessage += message[i] ^ XOR_KEY; // XOR avec la clé
+        count++;
+        if (count == 10) { // Ajouter un séparateur après chaque 10 caractères
+            cryptedMessage += SEPARATOR;
+            count = 0;
+        }
     }
     return cryptedMessage;
 }
@@ -39,8 +47,10 @@ std::string cryptMessage(const char *message)
 std::string decryptMessage(const std::string &message)
 {
     std::string decryptedMessage;
-    for (size_t i = 0; i < message.size(); i++) {
-        decryptedMessage += message[i] ^ 0xFF; // XOR with 0xFF
+    for (char c : message) {
+        if (c != SEPARATOR) { // Ignorer les séparateurs
+            decryptedMessage += c ^ XOR_KEY; // XOR avec la clé
+        }
     }
     return decryptedMessage;
 }
