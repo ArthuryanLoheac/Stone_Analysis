@@ -28,6 +28,7 @@ void parseArgs(int ac, char **av)
         "OUT_FILE Output audio file of the cypher mode\n" <<
         "MESSAGE The message to hide in the audio file\n" <<
         "N Number of top frequencies to display\n";
+        throw std::runtime_error("Invalid arguments");
     }
 }
 
